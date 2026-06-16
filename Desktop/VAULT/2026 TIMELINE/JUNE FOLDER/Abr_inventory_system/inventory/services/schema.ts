@@ -107,22 +107,24 @@ CREATE POLICY "Public Access Logs" ON public.activity_logs FOR ALL USING (true);
 -- Users
 INSERT INTO public.users (id, name, email, password, role, "isActive")
 VALUES 
-('u1', 'System Admin', 'admin@abrinventory.ng', 'password', 'ADMIN', true),
-('u2', 'John Sales', 'sales@abrinventory.ng', 'password', 'SALES_REP', true),
-('u3', 'Sarah Stock', 'stock@abrinventory.ng', 'password', 'INVENTORY_REP', true)
+('u1', 'System Admin', 'admin@krinastech.com', 'password', 'ADMIN', true),
+('u2', 'John Sales', 'sales@krinastech.com', 'password', 'SALES_REP', true),
+('u3', 'Sarah Stock', 'stock@krinastech.com', 'password', 'INVENTORY_REP', true)
 ON CONFLICT (id) DO NOTHING;
 
 -- Products
 INSERT INTO public.products (id, name, sku, category, price, stock, "lowStockThreshold", "enableLowStockAlert", supplier, "imageUrl", "vendorPrice", "pricePerPack", "quantityPerPack")
 VALUES
-('1', 'Moët & Chandon Imperial', 'WIN-MOET-75', 'Champagne', 65000.00, 24, 10, true, 'LVMH', 'https://images.unsplash.com/photo-1585553616435-2dc0a54e271d?auto=format&fit=crop&q=80&w=400', 55000.00, 380000.00, 6),
-('2', 'Hennessy V.S.O.P', 'COG-HEN-70', 'Cognac', 85500.00, 15, 5, true, 'Moët Hennessy', 'https://images.unsplash.com/photo-1613253597341-2856247c4c9e?auto=format&fit=crop&q=80&w=400', 70000.00, 500000.00, 6),
-('3', 'Cabernet Sauvignon 2019', 'RED-CAB-75', 'Red Wine', 28000.00, 45, 12, true, 'Napa Cellars', 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&q=80&w=400', 20000.00, 160000.00, 6),
-('4', 'Chardonnay Reserve', 'WHT-CHAR-75', 'White Wine', 24500.00, 32, 10, true, 'Sonoma Vineyards', 'https://images.unsplash.com/photo-1572569661446-52c676c3e76a?auto=format&fit=crop&q=80&w=400', 18000.00, 140000.00, 6),
-('5', 'Glenfiddich 12 Year', 'WHI-GLEN-70', 'Whiskey', 55000.00, 8, 10, true, 'William Grant', 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&q=80&w=400', 45000.00, 320000.00, 6),
-('6', 'Dom Pérignon Vintage', 'CHA-DOM-75', 'Champagne', 250000.00, 5, 3, true, 'LVMH', 'https://images.unsplash.com/photo-1605218457257-23b6b66d6d8d?auto=format&fit=crop&q=80&w=400', 210000.00, 1450000.00, 6),
-('7', 'Coca-Cola (Crate)', 'SFT-COKE-CR', 'Soft Drinks', 4500.00, 150, 20, false, 'Coca-Cola Bottling', 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400', 3800.00, 0, 1),
-('8', 'Heineken Lager (Case)', 'BER-HEIN-CS', 'Beer', 12000.00, 60, 15, true, 'Heineken NV', 'https://images.unsplash.com/photo-1618886361567-27a3c3114995?auto=format&fit=crop&q=80&w=400', 10500.00, 0, 1)
+('1', 'iPhone 15 Pro Max', 'APL-IP15PM-256', 'Smartphones', 1200000.00, 25, 5, true, 'Apple Inc.', 'Latest Apple flagship with A17 Pro chip, titanium design', 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&q=80&w=400', 1050000.00, 0, 1),
+('2', 'Samsung Galaxy S24 Ultra', 'SS-GS24U-512', 'Smartphones', 1050000.00, 18, 5, true, 'Samsung Electronics', 'Premium Android with S Pen, 200MP camera', 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400', 920000.00, 0, 1),
+('3', 'MacBook Pro 16" M3 Max', 'APL-MBP16-M3', 'Laptops', 2500000.00, 10, 3, true, 'Apple Inc.', 'Ultimate pro laptop with 16-core CPU, 40-core GPU', 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400', 2200000.00, 0, 1),
+('4', 'Sony WH-1000XM5', 'SON-WHXM5-BLK', 'Audio', 350000.00, 40, 8, true, 'Sony Corp', 'Industry-leading noise cancellation wireless headphones', 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&q=80&w=400', 280000.00, 0, 1),
+('5', 'iPad Air M2', 'APL-IPAIR-M2', 'Tablets', 650000.00, 22, 5, true, 'Apple Inc.', 'Powerful tablet with M2 chip, 11-inch Liquid Retina display', 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=80&w=400', 550000.00, 0, 1),
+('6', 'Dell XPS 15', 'DELL-XPS15-9530', 'Laptops', 1800000.00, 7, 3, true, 'Dell Technologies', 'Premium Windows laptop with OLED display', 'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&q=80&w=400', 1550000.00, 0, 1),
+('7', 'AirPods Pro 2nd Gen', 'APL-AIRP-PRO2', 'Audio', 180000.00, 55, 10, false, 'Apple Inc.', 'Adaptive audio, USB-C, improved noise cancellation', 'https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?auto=format&fit=crop&q=80&w=400', 145000.00, 0, 1),
+('8', 'PlayStation 5 Slim', 'SON-PS5-SLIM', 'Gaming', 450000.00, 12, 4, true, 'Sony Interactive', 'Next-gen gaming console with 1TB SSD', 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=400', 380000.00, 0, 1),
+('9', 'Canon EOS R50', 'CN-EOSR50-24', 'Cameras', 750000.00, 9, 3, true, 'Canon Inc.', 'Mirrorless camera with 24.2MP APS-C sensor, 4K video', 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400', 620000.00, 0, 1),
+('10', 'Samsung 49\" Odyssey G9', 'SS-ODG9-49', 'Monitors', 850000.00, 6, 3, true, 'Samsung Electronics', 'Ultra-wide 49-inch curved gaming monitor, 240Hz', 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=400', 700000.00, 0, 1)
 ON CONFLICT (id) DO NOTHING;
 
 -- Customers
@@ -136,6 +138,6 @@ ON CONFLICT (id) DO NOTHING;
 -- Settings
 INSERT INTO public.settings (id, "companyName", email, phone, address, "currencySymbol", "taxRate", "receiptPrefix", "receiptIdDigits")
 VALUES
-(1, 'ABR TECHNOLOGIES LIMITED', 'admin@abrinventory.ng', '+234 800 123 4567', '15, Victoria Island, Lagos, Nigeria', '₦', 7.5, 'REC', 6)
+(1, 'Krinas Tech', 'admin@krinastech.com', '+234 800 123 4567', '15, Victoria Island, Lagos, Nigeria', '₦', 7.5, 'REC', 6)
 ON CONFLICT (id) DO NOTHING;
 `;

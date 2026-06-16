@@ -96,7 +96,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, isDarkMode, t
             <div className="p-2 bg-brand-gold rounded-xl text-white shadow-lg shadow-brand-gold/20">
               <Hexagon size={24} fill="currentColor" />
             </div>
-            <span className="font-bold text-xl tracking-tight">ABR TECHNOLOGIES LIMITED</span>
+            <span className="font-bold text-xl tracking-tight">Krinas Tech</span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -110,7 +110,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, isDarkMode, t
               Sign In
             </button>
             <button 
-              onClick={() => window.location.href='mailto:sales@abrinventory.ng'}
+              onClick={() => window.location.href='mailto:sales@krinastech.com'}
               className="bg-white/10 text-brand-text px-5 py-2.5 rounded-full font-medium transition-transform hover:scale-105 active:scale-95 hidden sm:block"
             >
               Contact Sales
@@ -151,7 +151,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, isDarkMode, t
               Sign In <ArrowRight size={20} />
             </button>
             <button 
-              onClick={() => window.location.href='mailto:sales@abrinventory.ng'}
+              onClick={() => window.location.href='mailto:sales@krinastech.com'}
               className="w-full sm:w-auto px-8 py-4 bg-brand-surface text-brand-text border border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full font-semibold text-lg transition-all"
             >
               Contact Sales
@@ -242,7 +242,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, isDarkMode, t
             <div className="p-2 bg-brand-gold rounded-xl text-white">
               <Hexagon size={20} fill="currentColor" />
             </div>
-            <span className="font-bold text-lg tracking-tight text-brand-text">ABR TECHNOLOGIES LIMITED</span>
+            <span className="font-bold text-lg tracking-tight text-brand-text">Krinas Tech</span>
            </div>
            
            <div className="flex gap-8 text-sm text-brand-muted">
@@ -251,17 +251,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, isDarkMode, t
              <a href="#" className="hover:text-brand-gold transition-colors">Support</a>
            </div>
            
-           <p className="text-sm text-gray-400">© 2025 ABR TECHNOLOGIES LIMITED. All rights reserved.</p>
+           <p className="text-sm text-gray-400">© 2025 Krinas Tech. All rights reserved.</p>
         </div>
       </footer>
 
       {/* Auth Modal */}
       {isAuthModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-fade-in">
-          <div className="bg-white bg-brand-bg w-full max-w-md rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden relative animate-scale-in">
+          <div className="bg-brand-bg w-full max-w-md rounded-3xl shadow-2xl border border-gray-800 overflow-hidden relative animate-scale-in">
             <button 
               onClick={() => setAuthModalOpen(false)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 bg-brand-surface text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="absolute top-4 right-4 p-2 rounded-full bg-brand-surface text-brand-muted hover:text-brand-text transition-colors"
             >
               <X size={20} />
             </button>
@@ -275,31 +275,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, isDarkMode, t
                 <p className="text-brand-muted text-sm">
                   Enter your credentials to access your dashboard.
                 </p>
-                <div className="mt-2 text-xs text-gray-400">
+                <div className="mt-2 text-xs text-brand-muted">
                    <p>Default Accounts:</p>
-                   <p>admin@abrinventory.ng / password</p>
-                   <p>sales@abrinventory.ng / password</p>
-                   <p>stock@abrinventory.ng / password</p>
+                   <p>admin@krinastech.com / password</p>
+                   <p>sales@krinastech.com / password</p>
+                   <p>stock@krinastech.com / password</p>
                 </div>
               </div>
 
               <form onSubmit={handleAuthSubmit} className="space-y-4">
                 {error && (
-                  <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm rounded-xl text-center">
+                  <div className="p-3 bg-red-900/20 text-red-400 text-sm rounded-xl text-center">
                     {error}
                   </div>
                 )}
                 <div className="space-y-1">
                   <label className="text-xs font-semibold uppercase text-brand-muted ml-1">Email</label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted" size={18} />
                     <input 
                       type="email" 
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@company.com" 
-                      className="w-full pl-11 pr-4 py-3 bg-gray-50 bg-brand-surface border border-gray-700 rounded-xl focus:ring-2 focus:ring-brand-gold/20 focus:border-brand-gold outline-none transition-all text-brand-text"
+                      className="w-full pl-11 pr-4 py-3 bg-brand-surface border border-gray-700 rounded-xl focus:ring-2 focus:ring-brand-gold/20 focus:border-brand-gold outline-none transition-all text-brand-text placeholder-brand-muted"
                     />
                   </div>
                 </div>
@@ -313,7 +313,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, isDarkMode, t
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••" 
-                      className="w-full pl-11 pr-4 py-3 bg-gray-50 bg-brand-surface border border-gray-700 rounded-xl focus:ring-2 focus:ring-brand-gold/20 focus:border-brand-gold outline-none transition-all text-brand-text"
+                      className="w-full pl-11 pr-4 py-3 bg-brand-surface border border-gray-700 rounded-xl focus:ring-2 focus:ring-brand-gold/20 focus:border-brand-gold outline-none transition-all text-brand-text placeholder-brand-muted"
                     />
                   </div>
                 </div>

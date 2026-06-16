@@ -376,7 +376,7 @@ const App = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `abr_inventory_backup_${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `krinas_inventory_backup_${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -490,7 +490,7 @@ const App = () => {
             <div className="p-2 bg-brand-gold rounded-lg text-white shadow-lg shadow-brand-gold/20 shrink-0">
               <Hexagon size={24} fill="currentColor" />
             </div>
-            {(isSidebarOpen || isMobile) && <span className="font-bold text-lg tracking-tight whitespace-nowrap">ABR TECHNOLOGIES LIMITED</span>}
+            {(isSidebarOpen || isMobile) && <span className="font-bold text-lg tracking-tight whitespace-nowrap">Krinas Tech</span>}
           </div>
           {isMobile && (
             <button onClick={() => setIsSidebarOpen(false)} className="text-brand-muted">
@@ -523,11 +523,11 @@ const App = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Header */}
-        <header className="h-16 lg:h-20 bg-white/80 bg-brand-surface/80 backdrop-blur-md border-b border-gray-700 flex items-center justify-between px-4 sm:px-8 z-10 no-print transition-colors duration-300 sticky top-0">
+        <header className="h-16 lg:h-20 bg-brand-surface/80 backdrop-blur-md border-b border-gray-700 flex items-center justify-between px-4 sm:px-8 z-10 no-print transition-colors duration-300 sticky top-0">
           <div className="flex items-center gap-3 lg:gap-4">
              <button 
                onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
-               className="p-2 -ml-2 text-gray-700 dark:text-gray-200 hover:bg-white/5 rounded-lg transition-colors"
+               className="p-2 -ml-2 text-brand-text/70 hover:bg-white/5 rounded-lg transition-colors"
              >
                <Menu size={24} />
              </button>
@@ -544,24 +544,24 @@ const App = () => {
           
           <div className="flex items-center space-x-2 sm:space-x-4">
             {isSyncing && (
-                <div className="flex items-center space-x-2 bg-brand-gold/5 bg-brand-gold-dark/20 text-brand-gold text-brand-gold px-3 py-1.5 rounded-full text-xs font-medium">
+                <div className="flex items-center space-x-2 bg-brand-gold-dark/20 text-brand-gold px-3 py-1.5 rounded-full text-xs font-medium">
                     <RefreshCw size={14} className="animate-spin" /> <span className="hidden sm:inline">Syncing...</span>
                 </div>
             )}
             
             {offlineQueueCount > 0 && !isSyncing && (
-                <div className="flex items-center space-x-2 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-3 py-1.5 rounded-full text-xs font-medium" title={`${offlineQueueCount} unsynced items`}>
+                <div className="flex items-center space-x-2 bg-orange-900/30 text-orange-400 px-3 py-1.5 rounded-full text-xs font-medium" title={`${offlineQueueCount} unsynced items`}>
                     <CloudOff size={14} /> <span className="hidden sm:inline">{offlineQueueCount} Saved Offline</span>
                 </div>
             )}
             
             {networkError && (
-              <div className="flex items-center space-x-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-3 py-1.5 rounded-full text-xs font-medium animate-pulse">
+              <div className="flex items-center space-x-2 bg-red-900/30 text-red-400 px-3 py-1.5 rounded-full text-xs font-medium animate-pulse">
                 <WifiOff size={14} /> <span className="hidden sm:inline">Offline Mode</span>
               </div>
             )}
             
-            <div className={`hidden sm:flex items-center space-x-2 ${networkError ? 'opacity-50' : 'bg-white dark:bg-gray-700'} border border-gray-700 rounded-full px-3 py-1.5 shadow-sm`}>
+            <div className={`hidden sm:flex items-center space-x-2 bg-brand-surface border border-gray-700 rounded-full px-3 py-1.5 shadow-sm`}>
               <div className={`w-2 h-2 rounded-full ${networkError ? 'bg-gray-400' : 'bg-green-500 animate-pulse'}`}></div>
               <span className="text-xs font-medium text-brand-text/70">{networkError ? 'Connection Lost' : 'System Online'}</span>
             </div>
@@ -574,23 +574,23 @@ const App = () => {
               >
                 <Bell size={20} />
                 {lowStockProducts.length > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"></span>
+                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-brand-bg"></span>
                 )}
               </button>
 
               {isNotificationsOpen && (
                 <div className="absolute right-0 mt-2 w-80 bg-brand-surface rounded-xl shadow-xl border border-gray-800 overflow-hidden animate-fade-in z-50">
-                  <div className="px-4 py-3 border-b border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-700/50">
+                  <div className="px-4 py-3 border-b border-gray-800 flex justify-between items-center bg-brand-surface">
                     <h3 className="font-semibold text-sm text-brand-text">Notifications</h3>
                     <span className="text-xs text-brand-muted">{lowStockProducts.length} Alerts</span>
                   </div>
                   <div className="max-h-64 overflow-y-auto">
                     {lowStockProducts.length > 0 ? (
                       lowStockProducts.map(p => (
-                        <div key={p.id} className="px-4 py-3 border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors flex items-start gap-3">
+                        <div key={p.id} className="px-4 py-3 border-b border-gray-700 hover:bg-white/5 transition-colors flex items-start gap-3">
                            <div className="mt-1 text-red-500 shrink-0"><AlertCircle size={16} /></div>
                            <div>
-                             <p className="text-sm font-medium text-brand-text/90 dark:text-gray-200">Low Stock Alert</p>
+                             <p className="text-sm font-medium text-brand-text/90">Low Stock Alert</p>
                              <p className="text-xs text-brand-muted mt-0.5">{p.name} is below threshold ({p.stock} remaining).</p>
                            </div>
                         </div>
