@@ -1,0 +1,7 @@
+{
+  "name": "ABR Technologies Limited",
+  "description": "A minimalist, high-performance inventory management system with automated stock tracking, POS, and customer management.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
