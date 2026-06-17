@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, 
   AreaChart, Area, PieChart, Pie, Cell, Legend 
 } from 'recharts';
-import { TrendingUp, Package, AlertCircle, DollarSign, Wine } from 'lucide-react';
+import { TrendingUp, Package, AlertCircle, DollarSign } from 'lucide-react';
 
 interface DashboardProps {
   products: Product[];
@@ -96,9 +96,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, sales, isDarkMod
         <StatCard 
           title="Total Inventory" 
           value={totalProducts} 
-          icon={Wine} 
+          icon={Package} 
           colorClass="text-brand-gold bg-brand-gold/5" 
-          subtext="Bottles & Crates"
+          subtext="Gadgets & Electronics"
         />
         <StatCard 
           title="Low Stock Alerts" 
