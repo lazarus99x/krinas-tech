@@ -389,6 +389,7 @@ export const api = {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     const dbProduct = { ...product };
     // If product id isn't a valid UUID, generate one so DB accepts it
+    let oldId = product.id;
     if (!uuidRegex.test(dbProduct.id)) {
       dbProduct.id = crypto.randomUUID();
     }
@@ -396,7 +397,7 @@ export const api = {
     const currentDefaults = isSupabaseConfigured() ? [] : INITIAL_PRODUCTS;
     const products = getLocalStorage<Product[]>(STORAGE_KEYS.PRODUCTS, currentDefaults);
     
-    const existingIndex = products.findIndex(p => p.id === product.id);
+    const existingIndex = products.findIndex(p => p.id === oldId);
     const newProducts = [...products];
     if (existingIndex >= 0) newProducts[existingIndex] = dbProduct;
     else newProducts.push(dbProduct);
@@ -404,10 +405,19 @@ export const api = {
 
     if (isSupabaseConfigured()) {
       try {
-        const { error } = await supabase.from('items').upsert(productToDb(dbProduct));
-        if (error) throw error;
+        const payload = productToDb(dbProduct);
+        // Try UPDATE first (PATCH) — works with anon RLS
+        const { data: existing } = await supabase.from('items').select('id').eq('id', dbProduct.id).maybeSingle();
+        if (existing) {
+          const { error } = await supabase.from('items').update(payload).eq('id', dbProduct.id);
+          if (error) throw error;
+        } else {
+          // INSERT — requires fix RLS policy, fallback to queue if fails
+          const { error } = await supabase.from('items').insert(payload);
+          if (error) throw error;
+        }
       } catch (e) {
-         console.warn("Offline: Queuing product update");
+         console.warn("Offline: Queuing product sync", e);
          queueAction('products', 'UPSERT', dbProduct);
       }
     }
