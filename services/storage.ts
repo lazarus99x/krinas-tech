@@ -279,7 +279,7 @@ export const api = {
     if (!isSupabaseConfigured()) return false;
     // Attempt to select from products. If 42P01 error (undefined table), return false.
     try {
-        const { error } = await supabase.from('items').select('id').limit(1);
+        const { error } = await supabase.from('products').select('id').limit(1);
         if (error && error.code === '42P01') {
             return false;
         }
@@ -294,18 +294,18 @@ export const api = {
     if (!isSupabaseConfigured()) return;
     
     try {
-      const { data: pData, error } = await supabase.from('items').select('id').limit(1);
+      const { data: pData, error } = await supabase.from('products').select('id').limit(1);
       if (error && error.code === '42P01') return; // Schema missing, app will handle
 
       if (!pData || pData.length === 0) {
           console.log("Seeding Products...");
-          await supabase.from('items').insert(INITIAL_PRODUCTS);
+          await supabase.from('products').insert(INITIAL_PRODUCTS);
       }
 
-      const { data: cData } = await supabase.from('profiles').select('id').limit(1);
+      const { data: cData } = await supabase.from('customers').select('id').limit(1);
       if (!cData || cData.length === 0) {
            console.log("Seeding Customers...");
-           await supabase.from('profiles').insert(INITIAL_CUSTOMERS);
+           await supabase.from('customers').insert(INITIAL_CUSTOMERS);
       }
 
       const { data: uData } = await supabase.from('users').select('id').limit(1);
@@ -335,27 +335,10 @@ export const api = {
   async getProducts(): Promise<Product[]> {
     if (isSupabaseConfigured()) {
       try {
-        const { data, error } = await supabase.from('items').select('*');
+        const { data, error } = await supabase.from('products').select('*');
         if (!error && data) {
-           // Map items table columns to Product interface
-           const mapped = (data as any[]).map(item => ({
-             id: item.id,
-             name: item.name,
-             sku: item.sku || '',
-             category: item.category || '',
-             price: item.price || 0,
-             stock: item.quantity || 0,
-             lowStockThreshold: item.reorder_point || 10,
-             enableLowStockAlert: true,
-             supplier: item.supplier || '',
-             description: item.description || '',
-             imageUrl: item.image_url || '',
-             vendorPrice: item.cost || 0,
-             pricePerPack: 0,
-             quantityPerPack: 1
-           }));
-           setLocalStorage(STORAGE_KEYS.PRODUCTS, mapped);
-           return mapped as Product[];
+           setLocalStorage(STORAGE_KEYS.PRODUCTS, data as unknown as Product[]);
+           return data as unknown as Product[];
         }
       } catch (err) {
         console.warn("Offline: Fetching products from local cache");
@@ -379,13 +362,7 @@ export const api = {
 
     if (isSupabaseConfigured()) {
       try {
-        const { error } = await supabase.from('items').upsert({
-      id: product.id, name: product.name, sku: product.sku,
-      category: product.category, price: product.price,
-      quantity: product.stock, reorder_point: product.lowStockThreshold || 10,
-      supplier: product.supplier, description: product.description,
-      image_url: product.imageUrl, cost: product.vendorPrice || 0
-    });
+        const { error } = await supabase.from('products').upsert(product);
         if (error) throw error;
       } catch (e) {
          console.warn("Offline: Queuing product update");
@@ -402,7 +379,7 @@ export const api = {
 
     if (isSupabaseConfigured()) {
       try {
-        const { error } = await supabase.from('items').delete().eq('id', id);
+        const { error } = await supabase.from('products').delete().eq('id', id);
         if (error) throw error;
       } catch (e) { 
         console.warn("Offline: Queuing product deletion");
@@ -415,7 +392,7 @@ export const api = {
   async getCustomers(): Promise<Customer[]> {
     if (isSupabaseConfigured()) {
       try {
-        const { data, error } = await supabase.from('profiles').select('*');
+        const { data, error } = await supabase.from('customers').select('*');
         if (!error && data) {
            setLocalStorage(STORAGE_KEYS.CUSTOMERS, data);
            return data as Customer[];
@@ -438,7 +415,7 @@ export const api = {
 
     if (isSupabaseConfigured()) {
        try { 
-         const { error } = await supabase.from('profiles').upsert(customer); 
+         const { error } = await supabase.from('customers').upsert(customer); 
          if (error) throw error;
        } catch(e) {
          queueAction('customers', 'UPSERT', customer);
@@ -454,7 +431,7 @@ export const api = {
 
     if (isSupabaseConfigured()) {
       try { 
-        const { error } = await supabase.from('profiles').delete().eq('id', id);
+        const { error } = await supabase.from('customers').delete().eq('id', id);
         if (error) throw error;
       } catch(e) {
         queueAction('customers', 'DELETE', { id });
