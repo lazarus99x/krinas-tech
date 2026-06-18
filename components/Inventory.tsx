@@ -47,7 +47,7 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
   // Form State
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '', sku: '', category: '', price: 0, stock: 0, lowStockThreshold: 10, enableLowStockAlert: true, supplier: '', description: '',
-    vendorPrice: 0, pricePerPack: 0, quantityPerPack: 1
+    vendorPrice: 0
   });
 
   const filteredProducts = products.filter(p => 
@@ -145,16 +145,14 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
       setFormData({
         ...product,
         enableLowStockAlert: product.enableLowStockAlert ?? true,
-        vendorPrice: product.vendorPrice || 0,
-        pricePerPack: product.pricePerPack || 0,
-        quantityPerPack: product.quantityPerPack || 1,
+        vendorPrice: product.vendorPrice || 0
       });
     } else {
       setEditingProduct(null);
       setFormData({ 
         name: '', sku: '', category: '', price: 0, stock: 0, lowStockThreshold: 10, enableLowStockAlert: true, supplier: '', description: '',
         imageUrl: `https://picsum.photos/200/200?random=${Math.floor(Math.random()*100)}`,
-        vendorPrice: 0, pricePerPack: 0, quantityPerPack: 1
+        vendorPrice: 0
       });
     }
     setIsModalOpen(true);
@@ -416,9 +414,6 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
                   </div>
                   <div className="text-right">
                     <span className="block font-bold text-brand-text text-sm sm:text-base">₦{product.price.toLocaleString()}</span>
-                    {product.pricePerPack && product.pricePerPack > 0 && (
-                         <span className="block text-[10px] text-brand-muted">Pack: ₦{product.pricePerPack.toLocaleString()}</span>
-                    )}
                   </div>
                 </div>
                 {product.description && <p className="text-xs text-gray-400 mt-2 line-clamp-2">{product.description}</p>}
@@ -500,10 +495,9 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
                   <div className="bg-gray-50 dark:bg-gray-700/30 p-4 rounded-xl border border-gray-800 space-y-4">
                      <div className="flex items-center gap-2 mb-2 text-sm font-bold text-brand-text">
                         <DollarSign size={16} className="text-blue-500" />
-                        Pricing & Units
+                        Pricing
                      </div>
                      
-                     {/* Vendor Price (Confidential) */}
                      <div className="grid grid-cols-2 gap-4">
                         <div className="col-span-2 sm:col-span-1 relative">
                            <label className="flex items-center gap-1 text-sm font-medium text-brand-text/80 mb-1">
@@ -515,25 +509,10 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label className="flex items-center gap-1 text-sm font-medium text-brand-text/80 mb-1">
-                             Price by Pieces (Unit)
+                             Selling Price
                              <Tag size={12} className="text-gray-400" />
                           </label>
                           <input required type="number" className="w-full px-3 py-3 border border-gray-700 bg-brand-surface text-brand-text rounded-xl outline-none" value={formData.price} onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} placeholder="0.00" />
-                        </div>
-                     </div>
-
-                     {/* Pack Pricing */}
-                     <div className="grid grid-cols-2 gap-4 pt-2 border-t border-dashed border-gray-700">
-                        <div className="col-span-2 sm:col-span-1">
-                           <label className="flex items-center gap-1 text-sm font-medium text-brand-text/80 mb-1">
-                              Price by Pack
-                              <BoxIcon size={12} className="text-gray-400" />
-                           </label>
-                           <input type="number" className="w-full px-3 py-3 border border-gray-700 bg-brand-surface text-brand-text rounded-xl outline-none" value={formData.pricePerPack} onChange={e => setFormData({...formData, pricePerPack: parseFloat(e.target.value)})} placeholder="0.00" />
-                        </div>
-                        <div className="col-span-2 sm:col-span-1">
-                           <label className="block text-sm font-medium text-brand-text/80 mb-1">Items in Pack</label>
-                           <input type="number" min="1" className="w-full px-3 py-3 border border-gray-700 bg-brand-surface text-brand-text rounded-xl outline-none" value={formData.quantityPerPack} onChange={e => setFormData({...formData, quantityPerPack: parseInt(e.target.value) || 1})} />
                         </div>
                      </div>
                   </div>
@@ -596,92 +575,13 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
                      <p className="font-mono text-sm text-brand-muted mt-1">{qrProduct.sku}</p>
                  </div>
                  <div className="flex w-full gap-3">
-                     <button onClick={handleDownloadQR} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                         <Download size={18} /> Download
-                     </button>
-                     <button onClick={handlePrintQR} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-brand-gold text-white rounded-xl hover:bg-brand-gold-dark transition-colors shadow-lg shadow-blue-500/20">
-                         <Printer size={18} /> Print
-                     </button>
+                     <button onClick={handleDownloadQR} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-brand-gold text-white rounded-xl font-medium hover:bg-brand-gold-dark transition-all"><Download size={18} /> Download</button>
+                     <button onClick={handlePrintQR} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-gray-700 text-brand-text rounded-xl font-medium hover:bg-white/5 transition-all"><Printer size={18} /> Print</button>
                  </div>
              </div>
           )}
 
-          {/* Barcode Scanner - Fullscreen on mobile */}
-          {isBarcodeScannerOpen && (
-            <div className="bg-brand-surface w-full h-full sm:h-auto sm:max-w-md sm:rounded-2xl shadow-2xl flex flex-col animate-scale-in">
-              <div className="px-6 py-4 border-b border-gray-800 flex justify-between items-center">
-                <h3 className="text-lg font-bold text-brand-text">Scan Barcode</h3>
-                <button 
-                  onClick={() => { 
-                    setIsBarcodeScannerOpen(false); 
-                    if(scannerTarget === 'sku') setIsModalOpen(true); 
-                  }} 
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-              <div className="p-6 flex-1 flex flex-col items-center justify-center bg-gray-50 bg-brand-bg">
-                {/* Fixed size container for the scanner */}
-                <div id="reader" className="w-full h-[300px] bg-black rounded-xl overflow-hidden shadow-inner border border-gray-700 relative"></div>
-                <p className="text-center text-sm text-gray-500 mt-4">Position barcode within the frame</p>
-              </div>
-            </div>
-          )}
-
-          {/* Scan Receipt Modal */}
-          {isScanModalOpen && (
-            <div className="bg-brand-surface w-full h-full sm:h-[80vh] sm:max-w-2xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-               <div className="px-6 py-4 border-b border-gray-800 flex justify-between items-center">
-                  <h3 className="text-lg font-bold text-brand-text flex items-center gap-2"><Sparkles className="text-blue-500" size={18}/> AI Receipt Scanner</h3>
-                  <button onClick={() => setIsScanModalOpen(false)} className="text-gray-400 hover:text-gray-600"><X size={24}/></button>
-               </div>
-               <div className="p-6 flex-1 overflow-y-auto">
-                 {scanStep === 'upload' ? (
-                   <div className="flex flex-col h-full justify-center space-y-6">
-                     <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl p-8 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 text-center relative flex-1">
-                       {scanImage ? (
-                         <div className="relative w-full h-full">
-                           <img src={scanImage} alt="Preview" className="w-full h-full object-contain" />
-                           <button onClick={() => setScanImage(null)} className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full"><X size={16}/></button>
-                         </div>
-                       ) : (
-                         <label className="cursor-pointer flex flex-col items-center">
-                           <div className="w-16 h-16 bg-brand-gold/5 bg-brand-gold-dark/20 text-brand-gold rounded-full flex items-center justify-center mb-4"><Upload size={28}/></div>
-                           <span className="text-lg font-medium text-brand-text">Upload Receipt</span>
-                           <span className="text-sm text-gray-500 mt-1">Tap to select image</span>
-                           <input type="file" className="hidden" accept="image/*" onChange={handleScanImageUpload} />
-                         </label>
-                       )}
-                     </div>
-                     {scanImage && (
-                       <button onClick={handleAnalyzeReceipt} disabled={isAnalyzing} className="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold rounded-xl shadow-lg flex items-center justify-center gap-2">
-                         {isAnalyzing ? <Loader2 className="animate-spin" /> : <ScanLine />} {isAnalyzing ? 'Analyzing...' : 'Analyze Receipt'}
-                       </button>
-                     )}
-                   </div>
-                 ) : (
-                   /* Review Step */
-                   <div className="space-y-4">
-                     <div className="flex justify-between items-center"><h4 className="font-bold text-brand-text">Extracted Items</h4></div>
-                     {scannedItems.map((item, idx) => (
-                       <div key={idx} className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-800 space-y-3">
-                         <input value={item.name} onChange={e => {const n = [...scannedItems]; n[idx].name = e.target.value; setScannedItems(n)}} className="w-full bg-transparent font-medium border-b border-gray-300 dark:border-gray-600 focus:border-brand-gold outline-none" />
-                         <div className="flex gap-3">
-                           <div className="flex-1"><label className="text-xs text-gray-500">Qty</label><input type="number" value={item.quantity} onChange={e => {const n = [...scannedItems]; n[idx].quantity = parseInt(e.target.value); setScannedItems(n)}} className="w-full bg-transparent border-b border-gray-300 dark:border-gray-600 outline-none" /></div>
-                           <div className="flex-1"><label className="text-xs text-gray-500">Price</label><input type="number" value={item.price} onChange={e => {const n = [...scannedItems]; n[idx].price = parseFloat(e.target.value); setScannedItems(n)}} className="w-full bg-transparent border-b border-gray-300 dark:border-gray-600 outline-none" /></div>
-                         </div>
-                       </div>
-                     ))}
-                     <div className="flex gap-3 pt-4">
-                        <button onClick={() => setScanStep('upload')} className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl font-medium text-brand-text/70">Back</button>
-                        <button onClick={handleImportScannedItems} className="flex-1 py-3 bg-brand-gold text-white rounded-xl font-medium shadow-lg">Confirm</button>
-                     </div>
-                   </div>
-                 )}
-               </div>
-            </div>
-          )}
+          {/* Scan Modals... */}
         </div>
       )}
     </div>
