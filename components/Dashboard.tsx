@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, 
   AreaChart, Area, PieChart, Pie, Cell, Legend 
 } from 'recharts';
-import { TrendingUp, Package, AlertCircle, DollarSign } from 'lucide-react';
+import { TrendingUp, Package, AlertCircle, DollarSign, Coins } from 'lucide-react';
 
 interface DashboardProps {
   products: Product[];
@@ -14,6 +14,7 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ products, sales, isDarkMode }) => {
   const totalProducts = products.reduce((acc, p) => acc + p.stock, 0);
+  const totalStockValue = products.reduce((acc, p) => acc + (p.price * p.stock), 0);
   
   // Calculate low stock items based on enabled alerts AND individual thresholds
   const lowStockItems = products.filter(p => p.enableLowStockAlert && p.stock <= (p.lowStockThreshold || 10)).length;
@@ -99,6 +100,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, sales, isDarkMod
           icon={Package} 
           colorClass="text-brand-gold bg-brand-gold/5" 
           subtext="Gadgets & Electronics"
+        />
+        <StatCard 
+          title="Stock Value" 
+          value={formatCurrency(totalStockValue)} 
+          icon={Coins} 
+          colorClass="text-emerald-500 bg-emerald-500/10" 
+          subtext="Total inventory worth"
         />
         <StatCard 
           title="Low Stock Alerts" 
