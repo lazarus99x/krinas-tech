@@ -235,13 +235,12 @@ const App = () => {
   // CRUD Operations with Optimistic Updates & API calls
   const handleAddProduct = async (p: Product) => {
     if (currentUser) logActivity(currentUser, 'ADD_PRODUCT', `Added ${p.name}`);
+    const productWithUuid = { ...p, id: crypto.randomUUID() };
     // Optimistic Update
-    setProducts(prev => [...prev, p]);
+    setProducts(prev => [...prev, productWithUuid]);
     try {
-      await api.upsertProduct(p);
+      await api.upsertProduct(productWithUuid);
     } catch {
-      // Revert if failed (though now storage.ts handles fallback, this is mostly for critical errors)
-      // For improved offline support we assume storage.ts handles persistence
     }
   };
   

@@ -1,4 +1,3 @@
-
 import { Product, Customer, Sale, AppSettings, User, ActivityLog } from '../types';
 import { supabase, isSupabaseConfigured } from './supabase';
 
@@ -23,18 +22,17 @@ interface OfflineAction {
   timestamp: number;
 }
 
-// Initial Mock Data (Fallback - Only used when NO Database is connected OR DB is empty for Users)
 const INITIAL_PRODUCTS: Product[] = [
-  { id: '1', name: 'iPhone 15 Pro Max', sku: 'APL-IP15PM-256', category: 'Smartphones', price: 1200000.00, vendorPrice: 1050000.00, pricePerPack: 0, quantityPerPack: 1, stock: 25, lowStockThreshold: 5, enableLowStockAlert: true, supplier: 'Apple Inc.', imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&q=80&w=400' },
-  { id: '2', name: 'Samsung Galaxy S24 Ultra', sku: 'SS-GS24U-512', category: 'Smartphones', price: 1050000.00, vendorPrice: 920000.00, pricePerPack: 0, quantityPerPack: 1, stock: 18, lowStockThreshold: 5, enableLowStockAlert: true, supplier: 'Samsung Electronics', imageUrl: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400' },
-  { id: '3', name: 'MacBook Pro 16" M3 Max', sku: 'APL-MBP16-M3', category: 'Laptops', price: 2500000.00, vendorPrice: 2200000.00, pricePerPack: 0, quantityPerPack: 1, stock: 10, lowStockThreshold: 3, enableLowStockAlert: true, supplier: 'Apple Inc.', imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400' },
-  { id: '4', name: 'Sony WH-1000XM5', sku: 'SON-WHXM5-BLK', category: 'Audio', price: 350000.00, vendorPrice: 280000.00, pricePerPack: 0, quantityPerPack: 1, stock: 40, lowStockThreshold: 8, enableLowStockAlert: true, supplier: 'Sony Corp', imageUrl: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&q=80&w=400' },
-  { id: '5', name: 'iPad Air M2', sku: 'APL-IPAIR-M2', category: 'Tablets', price: 650000.00, vendorPrice: 550000.00, pricePerPack: 0, quantityPerPack: 1, stock: 22, lowStockThreshold: 5, enableLowStockAlert: true, supplier: 'Apple Inc.', imageUrl: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=80&w=400' },
-  { id: '6', name: 'Dell XPS 15', sku: 'DELL-XPS15-9530', category: 'Laptops', price: 1800000.00, vendorPrice: 1550000.00, pricePerPack: 0, quantityPerPack: 1, stock: 7, lowStockThreshold: 3, enableLowStockAlert: true, supplier: 'Dell Technologies', imageUrl: 'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&q=80&w=400' },
-  { id: '7', name: 'AirPods Pro 2nd Gen', sku: 'APL-AIRP-PRO2', category: 'Audio', price: 180000.00, vendorPrice: 145000.00, pricePerPack: 0, quantityPerPack: 1, stock: 55, lowStockThreshold: 10, enableLowStockAlert: false, supplier: 'Apple Inc.', imageUrl: 'https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?auto=format&fit=crop&q=80&w=400' },
-  { id: '8', name: 'PlayStation 5 Slim', sku: 'SON-PS5-SLIM', category: 'Gaming', price: 450000.00, vendorPrice: 380000.00, pricePerPack: 0, quantityPerPack: 1, stock: 12, lowStockThreshold: 4, enableLowStockAlert: true, supplier: 'Sony Interactive', imageUrl: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=400' },
-  { id: '9', name: 'Canon EOS R50', sku: 'CN-EOSR50-24', category: 'Cameras', price: 750000.00, vendorPrice: 620000.00, pricePerPack: 0, quantityPerPack: 1, stock: 9, lowStockThreshold: 3, enableLowStockAlert: true, supplier: 'Canon Inc.', imageUrl: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400' },
-  { id: '10', name: 'Samsung 49\\" Odyssey G9', sku: 'SS-ODG9-49', category: 'Monitors', price: 850000.00, vendorPrice: 700000.00, pricePerPack: 0, quantityPerPack: 1, stock: 6, lowStockThreshold: 3, enableLowStockAlert: true, supplier: 'Samsung Electronics', imageUrl: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=400' },
+  { id: '1', name: 'iPhone 15 Pro Max', sku: 'APL-IP15PM-256', category: 'Smartphones', price: 1200000.00, vendorPrice: 1050000.00, stock: 25, lowStockThreshold: 5, enableLowStockAlert: true, supplier: 'Apple Inc.', imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&q=80&w=400' },
+  { id: '2', name: 'Samsung Galaxy S24 Ultra', sku: 'SS-GS24U-512', category: 'Smartphones', price: 1050000.00, vendorPrice: 920000.00, stock: 18, lowStockThreshold: 5, enableLowStockAlert: true, supplier: 'Samsung Electronics', imageUrl: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400' },
+  { id: '3', name: 'MacBook Pro 16" M3 Max', sku: 'APL-MBP16-M3', category: 'Laptops', price: 2500000.00, vendorPrice: 2200000.00, stock: 10, lowStockThreshold: 3, enableLowStockAlert: true, supplier: 'Apple Inc.', imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400' },
+  { id: '4', name: 'Sony WH-1000XM5', sku: 'SON-WHXM5-BLK', category: 'Audio', price: 350000.00, vendorPrice: 280000.00, stock: 40, lowStockThreshold: 8, enableLowStockAlert: true, supplier: 'Sony Corp', imageUrl: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&q=80&w=400' },
+  { id: '5', name: 'iPad Air M2', sku: 'APL-IPAIR-M2', category: 'Tablets', price: 650000.00, vendorPrice: 550000.00, stock: 22, lowStockThreshold: 5, enableLowStockAlert: true, supplier: 'Apple Inc.', imageUrl: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=80&w=400' },
+  { id: '6', name: 'Dell XPS 15', sku: 'DELL-XPS15-9530', category: 'Laptops', price: 1800000.00, vendorPrice: 1550000.00, stock: 7, lowStockThreshold: 3, enableLowStockAlert: true, supplier: 'Dell Technologies', imageUrl: 'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&q=80&w=400' },
+  { id: '7', name: 'AirPods Pro 2nd Gen', sku: 'APL-AIRP-PRO2', category: 'Audio', price: 180000.00, vendorPrice: 145000.00, stock: 55, lowStockThreshold: 10, enableLowStockAlert: false, supplier: 'Apple Inc.', imageUrl: 'https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?auto=format&fit=crop&q=80&w=400' },
+  { id: '8', name: 'PlayStation 5 Slim', sku: 'SON-PS5-SLIM', category: 'Gaming', price: 450000.00, vendorPrice: 380000.00, stock: 12, lowStockThreshold: 4, enableLowStockAlert: true, supplier: 'Sony Interactive', imageUrl: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=400' },
+  { id: '9', name: 'Canon EOS R50', sku: 'CN-EOSR50-24', category: 'Cameras', price: 750000.00, vendorPrice: 620000.00, stock: 9, lowStockThreshold: 3, enableLowStockAlert: true, supplier: 'Canon Inc.', imageUrl: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400' },
+  { id: '10', name: 'Samsung 49" Odyssey G9', sku: 'SS-ODG9-49', category: 'Monitors', price: 850000.00, vendorPrice: 700000.00, stock: 6, lowStockThreshold: 3, enableLowStockAlert: true, supplier: 'Samsung Electronics', imageUrl: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=400' },
 ];
 
 const INITIAL_CUSTOMERS: Customer[] = [
@@ -268,6 +266,37 @@ export const getOfflineQueueCount = (): number => {
 
 export const OFFLINE_QUEUE_CHANGED_EVENT = OFFLINE_QUEUE_EVENT;
 
+// Map Product to DB columns (items table)
+const productToDb = (p: Product) => ({
+  id: p.id,
+  name: p.name,
+  sku: p.sku,
+  description: p.description || '',
+  category: p.category || '',
+  quantity: p.stock,
+  price: p.price || 0,
+  cost: p.vendorPrice || 0,
+  supplier: p.supplier || '',
+  image_url: p.imageUrl || '',
+  reorder_point: p.lowStockThreshold || 10
+});
+
+// Map DB columns back to Product
+const dbToProduct = (item: any): Product => ({
+  id: item.id,
+  name: item.name,
+  sku: item.sku || '',
+  category: item.category || '',
+  price: item.price || 0,
+  stock: item.quantity || 0,
+  lowStockThreshold: item.reorder_point || 10,
+  enableLowStockAlert: true,
+  supplier: item.supplier || '',
+  description: item.description || '',
+  imageUrl: item.image_url || '',
+  vendorPrice: item.cost || 0
+});
+
 // Helpers for Data Loading
 const getSafeDefault = <T>(dummyData: T): T => {
     return isSupabaseConfigured() ? ([] as unknown as T) : dummyData;
@@ -277,9 +306,8 @@ export const api = {
   // Check if tables exist
   async checkDatabaseSchema(): Promise<boolean> {
     if (!isSupabaseConfigured()) return false;
-    // Attempt to select from products. If 42P01 error (undefined table), return false.
     try {
-        const { error } = await supabase.from('products').select('id').limit(1);
+        const { error } = await supabase.from('items').select('id').limit(1);
         if (error && error.code === '42P01') {
             return false;
         }
@@ -294,30 +322,32 @@ export const api = {
     if (!isSupabaseConfigured()) return;
     
     try {
-      const { data: pData, error } = await supabase.from('products').select('id').limit(1);
-      if (error && error.code === '42P01') return; // Schema missing, app will handle
+      const { data: pData, error } = await supabase.from('items').select('id').limit(1);
+      if (error && error.code === '42P01') return;
 
       if (!pData || pData.length === 0) {
           console.log("Seeding Products...");
-          await supabase.from('products').insert(INITIAL_PRODUCTS);
+          await supabase.from('items').insert(INITIAL_PRODUCTS.map(productToDb));
       }
 
-      const { data: cData } = await supabase.from('customers').select('id').limit(1);
+      const { data: cData } = await supabase.from('profiles').select('id').limit(1);
       if (!cData || cData.length === 0) {
            console.log("Seeding Customers...");
-           await supabase.from('customers').insert(INITIAL_CUSTOMERS);
+           await supabase.from('profiles').insert(INITIAL_CUSTOMERS);
       }
 
       const { data: uData } = await supabase.from('users').select('id').limit(1);
       if (!uData || uData.length === 0) {
            console.log("Seeding Users...");
-           await supabase.from('users').insert(INITIAL_USERS);
+           const { error: ue } = await supabase.from('users').insert(INITIAL_USERS);
+           if (ue) console.warn('Seed users:', ue);
       }
       
       const { data: sData } = await supabase.from('sales').select('id').limit(1);
       if (!sData || sData.length === 0) {
            console.log("Seeding Sales...");
-           await supabase.from('sales').insert(INITIAL_SALES);
+           const { error: se } = await supabase.from('sales').insert(INITIAL_SALES);
+           if (se) console.warn('Seed sales:', se);
       }
       
       const { data: settData } = await supabase.from('settings').select('id').limit(1);
@@ -335,18 +365,17 @@ export const api = {
   async getProducts(): Promise<Product[]> {
     if (isSupabaseConfigured()) {
       try {
-        const { data, error } = await supabase.from('products').select('*');
+        const { data, error } = await supabase.from('items').select('*');
         if (!error && data) {
-           setLocalStorage(STORAGE_KEYS.PRODUCTS, data as unknown as Product[]);
-           return data as unknown as Product[];
+           const mapped = (data as any[]).map(dbToProduct);
+           setLocalStorage(STORAGE_KEYS.PRODUCTS, mapped);
+           return mapped;
         }
       } catch (err) {
         console.warn("Offline: Fetching products from local cache");
       }
-      // Return local cache, defaulting to empty if DB is configured (No dummy data)
       return getLocalStorage(STORAGE_KEYS.PRODUCTS, [] as Product[]);
     }
-    // Only use dummy data if NO DB is configured
     return getLocalStorage(STORAGE_KEYS.PRODUCTS, INITIAL_PRODUCTS);
   },
 
@@ -362,7 +391,7 @@ export const api = {
 
     if (isSupabaseConfigured()) {
       try {
-        const { error } = await supabase.from('products').upsert(product);
+        const { error } = await supabase.from('items').upsert(productToDb(product));
         if (error) throw error;
       } catch (e) {
          console.warn("Offline: Queuing product update");
@@ -379,7 +408,7 @@ export const api = {
 
     if (isSupabaseConfigured()) {
       try {
-        const { error } = await supabase.from('products').delete().eq('id', id);
+        const { error } = await supabase.from('items').delete().eq('id', id);
         if (error) throw error;
       } catch (e) { 
         console.warn("Offline: Queuing product deletion");
@@ -392,7 +421,7 @@ export const api = {
   async getCustomers(): Promise<Customer[]> {
     if (isSupabaseConfigured()) {
       try {
-        const { data, error } = await supabase.from('customers').select('*');
+        const { data, error } = await supabase.from('profiles').select('*');
         if (!error && data) {
            setLocalStorage(STORAGE_KEYS.CUSTOMERS, data);
            return data as Customer[];
@@ -415,7 +444,7 @@ export const api = {
 
     if (isSupabaseConfigured()) {
        try { 
-         const { error } = await supabase.from('customers').upsert(customer); 
+         const { error } = await supabase.from('profiles').upsert(customer); 
          if (error) throw error;
        } catch(e) {
          queueAction('customers', 'UPSERT', customer);
@@ -431,7 +460,7 @@ export const api = {
 
     if (isSupabaseConfigured()) {
       try { 
-        const { error } = await supabase.from('customers').delete().eq('id', id);
+        const { error } = await supabase.from('profiles').delete().eq('id', id);
         if (error) throw error;
       } catch(e) {
         queueAction('customers', 'DELETE', { id });
