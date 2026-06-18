@@ -15,6 +15,7 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ products, sales, isDarkMode }) => {
   const totalProducts = products.reduce((acc, p) => acc + p.stock, 0);
   const totalStockValue = products.reduce((acc, p) => acc + (p.price * p.stock), 0);
+  const totalCostValue = products.reduce((acc, p) => acc + ((p.vendorPrice || 0) * p.stock), 0);
   
   // Calculate low stock items based on enabled alerts AND individual thresholds
   const lowStockItems = products.filter(p => p.enableLowStockAlert && p.stock <= (p.lowStockThreshold || 10)).length;
@@ -93,7 +94,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, sales, isDarkMod
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
         <StatCard 
           title="Total Inventory" 
           value={totalProducts} 
@@ -107,6 +108,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, sales, isDarkMod
           icon={Coins} 
           colorClass="text-emerald-500 bg-emerald-500/10" 
           subtext="Total inventory worth"
+        />
+        <StatCard 
+          title="Stock Cost" 
+          value={formatCurrency(totalCostValue)} 
+          icon={Package} 
+          colorClass="text-blue-500 bg-blue-500/10" 
+          subtext="From vendors"
         />
         <StatCard 
           title="Low Stock Alerts" 
