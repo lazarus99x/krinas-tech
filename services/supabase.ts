@@ -9,12 +9,16 @@ export const isSupabaseConfigured = () => {
   return SUPABASE_URL !== '' && SUPABASE_ANON_KEY !== '';
 };
 
-// Initialize the Supabase client with auth persistence enabled
+// Initialize the Supabase client with auth persistence enabled and NO realtime
 export const supabase = isSupabaseConfigured()
   ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-      }
+      },
+      realtime: {
+        params: { eventsPerSecond: 0 }
+      },
+      db: { schema: 'public' }
     })
   : ({} as SupabaseClient);

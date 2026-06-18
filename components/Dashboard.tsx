@@ -72,14 +72,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ products, sales, isDarkMod
   };
 
   const StatCard = ({ title, value, icon: Icon, colorClass, subtext }: any) => (
-    <div className="bg-brand-surface p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-800 flex items-start justify-between gap-3 transition-all hover:scale-[1.02] duration-300">
+    <div className="bg-brand-surface p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-800 flex items-center gap-4 transition-all hover:scale-[1.02] duration-300">
+      <div className={`p-3 rounded-xl shrink-0 ${colorClass} bg-opacity-10 dark:bg-opacity-20`}>
+        <Icon size={22} />
+      </div>
       <div className="min-w-0 flex-1">
         <p className="text-brand-muted text-sm font-medium mb-1 truncate">{title}</p>
-        <h3 className="text-xl sm:text-2xl font-bold text-brand-text break-all">{value}</h3>
+        <h3 className="text-xl sm:text-2xl font-bold text-brand-text truncate">{value}</h3>
         {subtext && <p className="text-xs text-brand-muted mt-2 truncate">{subtext}</p>}
-      </div>
-      <div className={`p-3 rounded-xl shrink-0 ${colorClass} bg-opacity-10 dark:bg-opacity-20`}>
-        <Icon size={24} />
       </div>
     </div>
   );

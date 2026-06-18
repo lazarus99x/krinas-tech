@@ -363,42 +363,55 @@ export const api = {
 
   // Products
   async getProducts(): Promise<Product[]> {
+    // Always start with localStorage to preserve local-only products
+    let merged = getLocalStorage<Product[]>(STORAGE_KEYS.PRODUCTS, []);
+    
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase.from('items').select('*');
         if (!error && data) {
-           const mapped = (data as any[]).map(dbToProduct);
-           setLocalStorage(STORAGE_KEYS.PRODUCTS, mapped);
-           return mapped;
+           const dbProducts = (data as any[]).map(dbToProduct);
+           // Merge: DB takes priority, but keep local-only products
+           const dbIds = new Set(dbProducts.map(p => p.id));
+           merged = [...dbProducts, ...merged.filter(p => !dbIds.has(p.id))];
+           setLocalStorage(STORAGE_KEYS.PRODUCTS, merged);
+           return merged;
         }
       } catch (err) {
         console.warn("Offline: Fetching products from local cache");
       }
-      return getLocalStorage(STORAGE_KEYS.PRODUCTS, [] as Product[]);
+      return merged;
     }
-    return getLocalStorage(STORAGE_KEYS.PRODUCTS, INITIAL_PRODUCTS);
+    return merged.length > 0 ? merged : INITIAL_PRODUCTS;
   },
 
   async upsertProduct(product: Product): Promise<Product> {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const dbProduct = { ...product };
+    // If product id isn't a valid UUID, generate one so DB accepts it
+    if (!uuidRegex.test(dbProduct.id)) {
+      dbProduct.id = crypto.randomUUID();
+    }
+
     const currentDefaults = isSupabaseConfigured() ? [] : INITIAL_PRODUCTS;
     const products = getLocalStorage<Product[]>(STORAGE_KEYS.PRODUCTS, currentDefaults);
     
     const existingIndex = products.findIndex(p => p.id === product.id);
     const newProducts = [...products];
-    if (existingIndex >= 0) newProducts[existingIndex] = product;
-    else newProducts.push(product);
+    if (existingIndex >= 0) newProducts[existingIndex] = dbProduct;
+    else newProducts.push(dbProduct);
     setLocalStorage(STORAGE_KEYS.PRODUCTS, newProducts);
 
     if (isSupabaseConfigured()) {
       try {
-        const { error } = await supabase.from('items').upsert(productToDb(product));
+        const { error } = await supabase.from('items').upsert(productToDb(dbProduct));
         if (error) throw error;
       } catch (e) {
          console.warn("Offline: Queuing product update");
-         queueAction('products', 'UPSERT', product);
+         queueAction('products', 'UPSERT', dbProduct);
       }
     }
-    return product;
+    return dbProduct;
   },
 
   async deleteProduct(id: string): Promise<void> {
@@ -419,17 +432,28 @@ export const api = {
 
   // Customers
   async getCustomers(): Promise<Customer[]> {
+    let merged = getLocalStorage<Customer[]>(STORAGE_KEYS.CUSTOMERS, []);
+
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase.from('profiles').select('*');
         if (!error && data) {
-           setLocalStorage(STORAGE_KEYS.CUSTOMERS, data);
-           return data as Customer[];
+           const dbCusts = (data as any[]).map(p => ({
+             id: p.id,
+             name: p.full_name || p.email || 'Unknown',
+             email: p.email || '',
+             phone: '',
+             totalSpent: 0
+           }));
+           const dbIds = new Set(dbCusts.map(c => c.id));
+           merged = [...dbCusts, ...merged.filter(c => !dbIds.has(c.id))];
+           setLocalStorage(STORAGE_KEYS.CUSTOMERS, merged);
+           return merged;
         }
       } catch (e) { console.warn("Offline: Fetching customers from local cache"); }
-      return getLocalStorage(STORAGE_KEYS.CUSTOMERS, [] as Customer[]);
+      return merged;
     }
-    return getLocalStorage(STORAGE_KEYS.CUSTOMERS, INITIAL_CUSTOMERS);
+    return merged.length > 0 ? merged : INITIAL_CUSTOMERS;
   },
 
   async upsertCustomer(customer: Customer): Promise<Customer> {
@@ -444,7 +468,12 @@ export const api = {
 
     if (isSupabaseConfigured()) {
        try { 
-         const { error } = await supabase.from('profiles').upsert(customer); 
+         // Map to profiles table columns
+         const { error } = await supabase.from('profiles').upsert({ 
+           id: customer.id, 
+           full_name: customer.name, 
+           email: customer.email 
+         }); 
          if (error) throw error;
        } catch(e) {
          queueAction('customers', 'UPSERT', customer);
@@ -558,9 +587,9 @@ export const api = {
   async getSettings(): Promise<AppSettings> {
     if (isSupabaseConfigured()) {
       try {
-        const { data, error } = await supabase.from('settings').select('*').single();
-        if (!error && data) {
-            const normalized = normalizeSettingsBranding(data as AppSettings);
+        const { data, error } = await supabase.from('settings').select('*').limit(1);
+        if (!error && data && data.length > 0) {
+            const normalized = normalizeSettingsBranding(data[0] as AppSettings);
             setLocalStorage(STORAGE_KEYS.SETTINGS, normalized);
             return normalized;
         }
