@@ -26,6 +26,7 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Scan Receipt State
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
@@ -163,11 +164,18 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
     setEditingProduct(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingProduct) onUpdateProduct({ ...editingProduct, ...formData } as Product);
-    else onAddProduct({ ...formData, id: Date.now().toString() } as Product);
-    handleCloseModal();
+    setIsSaving(true);
+    try {
+      if (editingProduct) await onUpdateProduct({ ...editingProduct, ...formData } as Product);
+      else await onAddProduct({ ...formData, id: crypto.randomUUID() } as Product);
+      handleCloseModal();
+    } catch {
+      // fall through
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const openBarcodeScanner = (target: 'search' | 'sku') => {
@@ -554,7 +562,10 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
                 {/* Sticky Footer for Buttons */}
                 <div className="flex-none pt-4 flex justify-end space-x-3 p-6 border-t border-gray-800 bg-brand-surface rounded-b-2xl z-10">
                   <button type="button" onClick={handleCloseModal} className="flex-1 sm:flex-none px-6 py-3 text-brand-text/70 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-xl font-medium">Cancel</button>
-                  <button type="submit" className="flex-1 sm:flex-none px-6 py-3 text-white bg-brand-gold hover:bg-brand-gold-dark rounded-xl font-medium shadow-lg shadow-brand-gold/20">Save</button>
+                  <button type="submit" disabled={isSaving} className="flex-1 sm:flex-none px-6 py-3 text-white bg-brand-gold hover:bg-brand-gold-dark disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-medium shadow-lg shadow-brand-gold/20 flex items-center justify-center gap-2">
+                  {isSaving && <Loader2 size={16} className="animate-spin" />}
+                  {isSaving ? 'Saving...' : 'Save'}
+                </button>
                 </div>
               </form>
             </div>
