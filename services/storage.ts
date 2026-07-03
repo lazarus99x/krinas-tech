@@ -12,7 +12,7 @@ const normalizeSettingsBranding = (settings: AppSettings): AppSettings => {
 const productToDb = (p: Product) => ({
   id: p.id,
   name: p.name,
-  sku: p.sku || p.id, // use id as sku if empty to avoid unique constraint crash
+  sku: p.sku || p.id,
   description: p.description || '',
   category: p.category || '',
   quantity: p.stock,
@@ -20,7 +20,8 @@ const productToDb = (p: Product) => ({
   cost: p.vendorPrice || 0,
   supplier: p.supplier || '',
   image_url: p.imageUrl || '',
-  reorder_point: p.lowStockThreshold || 10
+  reorder_point: p.lowStockThreshold || 10,
+  created_at: p.stockDate || new Date().toISOString()
 });
 
 // Map DB columns back to Product
@@ -36,7 +37,8 @@ const dbToProduct = (item: any): Product => ({
   supplier: item.supplier || '',
   description: item.description || '',
   imageUrl: item.image_url || '',
-  vendorPrice: item.cost || 0
+  vendorPrice: item.cost || 0,
+  stockDate: item.created_at || undefined
 });
 
 // --- API Implementation ---

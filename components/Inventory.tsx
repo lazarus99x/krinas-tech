@@ -146,14 +146,16 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
       setFormData({
         ...product,
         enableLowStockAlert: product.enableLowStockAlert ?? true,
-        vendorPrice: product.vendorPrice || 0
+        vendorPrice: product.vendorPrice || 0,
+        stockDate: product.stockDate ? product.stockDate.slice(0, 16) : new Date().toISOString().slice(0, 16)
       });
     } else {
       setEditingProduct(null);
       setFormData({ 
         name: '', sku: '', category: '', price: 0, stock: 0, lowStockThreshold: 10, enableLowStockAlert: true, supplier: '', description: '',
         imageUrl: `https://picsum.photos/200/200?random=${Math.floor(Math.random()*100)}`,
-        vendorPrice: 0
+        vendorPrice: 0,
+        stockDate: new Date().toISOString().slice(0, 16)
       });
     }
     setIsModalOpen(true);
@@ -168,8 +170,13 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
     e.preventDefault();
     setIsSaving(true);
     try {
-      if (editingProduct) await onUpdateProduct({ ...editingProduct, ...formData } as Product);
-      else await onAddProduct({ ...formData, id: crypto.randomUUID() } as Product);
+      const product = {
+        ...formData,
+        id: editingProduct ? editingProduct.id : crypto.randomUUID(),
+        stockDate: formData.stockDate ? new Date(formData.stockDate).toISOString() : new Date().toISOString()
+      } as Product;
+      if (editingProduct) await onUpdateProduct(product);
+      else await onAddProduct(product);
       handleCloseModal();
     } catch {
       // fall through
@@ -429,6 +436,9 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
                   <p className="text-xs text-gray-400">SKU: {product.sku}</p>
                   {isLowStock && <span className="text-[10px] text-red-500 font-medium">Low Stock</span>}
                 </div>
+                {product.stockDate && (
+                  <p className="text-[10px] text-brand-muted mt-1">Stocked: {new Date(product.stockDate).toLocaleDateString()} {new Date(product.stockDate).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p>
+                )}
               </div>
               <div className="mt-4 pt-4 border-t border-gray-50 dark:border-gray-700 flex justify-between items-center lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                 <button onClick={() => handleGenerateQR(product)} className="p-2 text-brand-muted hover:text-brand-gold hover:text-brand-gold hover:bg-brand-gold/10 dark:hover:bg-purple-900/20 rounded-lg transition-colors" title="Generate QR Code"><QrCode size={16} /></button>
@@ -551,6 +561,10 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
                      <div className="col-span-2">
                       <label className="block text-sm font-medium text-brand-text/80 mb-1">Supplier</label>
                       <input type="text" className="w-full px-3 py-3 border border-gray-700 bg-brand-surface text-brand-text rounded-xl outline-none" value={formData.supplier} onChange={e => setFormData({...formData, supplier: e.target.value})} />
+                    </div>
+                     <div className="col-span-2 sm:col-span-1">
+                      <label className="block text-sm font-medium text-brand-text/80 mb-1">Stock Date</label>
+                      <input type="datetime-local" className="w-full px-3 py-3 border border-gray-700 bg-brand-surface text-brand-text rounded-xl outline-none" value={formData.stockDate || ''} onChange={e => setFormData({...formData, stockDate: e.target.value})} />
                     </div>
                      <div className="col-span-2">
                       <label className="block text-sm font-medium text-brand-text/80 mb-1">Description</label>

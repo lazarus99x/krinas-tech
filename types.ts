@@ -4,18 +4,18 @@ export interface Product {
   name: string;
   sku: string;
   category: string;
-  price: number; // This represents Price per Piece
-  stock: number; // Stock is tracked in base units (pieces)
+  price: number;
+  stock: number;
   lowStockThreshold?: number;
   enableLowStockAlert?: boolean;
   supplier: string;
   description?: string;
   imageUrl?: string;
+  stockDate?: string; // ISO datetime when product was stocked
   
-  // New Fields
-  vendorPrice?: number; // Cost Price (Confidential)
-  pricePerPack?: number; // Selling price per pack
-  quantityPerPack?: number; // How many pieces are in a pack
+  vendorPrice?: number;
+  pricePerPack?: number;
+  quantityPerPack?: number;
 }
 
 export interface Customer {
