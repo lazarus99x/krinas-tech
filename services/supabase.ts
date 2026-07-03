@@ -1,7 +1,8 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
+// Service role key bypasses all RLS policies
 const SUPABASE_URL = 'https://stkpsqzarppimostbxah.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0a3BzcXphcnBwaW1vc3RieGFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDMyODQsImV4cCI6MjA5NzE3OTI4NH0.fwurUnm6CdhDYNnj-e-ca_ecbSd70pe9wu6aQWPDSqI';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0a3BzcXphcnBwaW1vc3RieGFoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTYwMzI4NCwiZXhwIjoyMDk3MTc5Mjg0fQ.03kZ0GNcsixXXS15gJy4fw7b_xiqGlHXOBBBWEq0p5k';
 
 export const isSupabaseConfigured = () => {
   return SUPABASE_URL !== '' && SUPABASE_ANON_KEY !== '';
