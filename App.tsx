@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ViewState, Product, Customer, Sale, CartItem, AppSettings, PaymentStatus, User, ActivityLog } from './types';
-import { api, DEFAULTS, logActivity, syncOfflineData, getOfflineQueueCount, OFFLINE_QUEUE_CHANGED_EVENT } from './services/storage';
+import { api, DEFAULTS, logActivity } from './services/storage';
 import { supabase, isSupabaseConfigured } from './services/supabase';
 import { Dashboard } from './components/Dashboard';
 import { Inventory } from './components/Inventory';
@@ -11,7 +11,7 @@ import { Settings } from './components/Settings';
 import { LandingPage } from './components/LandingPage';
 import { Staff } from './components/Staff';
 import { CustomerDisplayScreen } from './components/CustomerDisplayScreen';
-import { LayoutDashboard, Package, ShoppingCart, Users, Menu, Hexagon, FileText, Moon, Sun, Settings as SettingsIcon, X, LogOut, User as UserIcon, Shield, Bell, AlertCircle, WifiOff, Loader2, CloudOff, RefreshCw, Database, Copy, Check } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Menu, Hexagon, FileText, Moon, Sun, Settings as SettingsIcon, X, LogOut, User as UserIcon, Shield, Bell, AlertCircle, WifiOff, Loader2, RefreshCw, Database, Copy, Check } from 'lucide-react';
 import { SUPABASE_SCHEMA_SQL } from './services/schema';
 
 const App = () => {
@@ -37,8 +37,6 @@ const App = () => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [networkError, setNetworkError] = useState(() => typeof navigator !== 'undefined' ? !navigator.onLine : false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [offlineQueueCount, setOfflineQueueCount] = useState(0);
 
   const profileRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -88,8 +86,6 @@ const App = () => {
       setUsers(usr);
       setLogs(lg);
       
-      // Check for unsynced items
-      setOfflineQueueCount(getOfflineQueueCount());
     } catch (err) {
       console.error("Failed to load data", err);
       setNetworkError(true);
@@ -122,32 +118,16 @@ const App = () => {
     // Online/Offline Listeners
       const handleOnline = async () => {
        setNetworkError(false);
-       if (isSupabaseConfigured()) {
-         setIsSyncing(true);
-         const synced = await syncOfflineData();
-         await loadData();
-         setIsSyncing(false);
-         if (synced > 0) {
-             alert(`Successfully synced ${synced} offline records.`);
-         }
-       } else {
-         await loadData();
-       }
+       await loadData();
     };
     const handleOffline = () => setNetworkError(true);
-    const handleQueueChanged = (event: Event) => {
-      const queueEvent = event as CustomEvent<number>;
-      setOfflineQueueCount(queueEvent.detail ?? getOfflineQueueCount());
-    };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    window.addEventListener(OFFLINE_QUEUE_CHANGED_EVENT, handleQueueChanged as EventListener);
 
     return () => {
         window.removeEventListener('online', handleOnline);
         window.removeEventListener('offline', handleOffline);
-        window.removeEventListener(OFFLINE_QUEUE_CHANGED_EVENT, handleQueueChanged as EventListener);
     };
   }, []);
 
@@ -380,14 +360,7 @@ const App = () => {
     link.click();
     document.body.removeChild(link);
   };
-
-  const handleResetData = () => {
-    if (window.confirm('Are you sure you want to clear all data? This cannot be undone.')) {
-        localStorage.clear();
-        window.location.reload();
-    }
-  };
-
+  
   const NavItem = ({ viewTarget, icon: Icon, label, allowedRoles }: { viewTarget: ViewState, icon: any, label: string, allowedRoles: string[] }) => {
     if (currentUser && !allowedRoles.includes(currentUser.role)) return null;
 
@@ -542,18 +515,6 @@ const App = () => {
           </div>
           
           <div className="flex items-center space-x-2 sm:space-x-4">
-            {isSyncing && (
-                <div className="flex items-center space-x-2 bg-brand-gold-dark/20 text-brand-gold px-3 py-1.5 rounded-full text-xs font-medium">
-                    <RefreshCw size={14} className="animate-spin" /> <span className="hidden sm:inline">Syncing...</span>
-                </div>
-            )}
-            
-            {offlineQueueCount > 0 && !isSyncing && (
-                <div className="flex items-center space-x-2 bg-orange-900/30 text-orange-400 px-3 py-1.5 rounded-full text-xs font-medium" title={`${offlineQueueCount} unsynced items`}>
-                    <CloudOff size={14} /> <span className="hidden sm:inline">{offlineQueueCount} Saved Offline</span>
-                </div>
-            )}
-            
             {networkError && (
               <div className="flex items-center space-x-2 bg-red-900/30 text-red-400 px-3 py-1.5 rounded-full text-xs font-medium animate-pulse">
                 <WifiOff size={14} /> <span className="hidden sm:inline">Offline Mode</span>
@@ -675,7 +636,7 @@ const App = () => {
                 isDarkMode={isDarkMode} 
                 onToggleTheme={() => setIsDarkMode(!isDarkMode)}
                 onExportData={handleExportData}
-                onResetData={handleResetData}
+                onResetData={() => {}}
               />
             )}
           </div>
