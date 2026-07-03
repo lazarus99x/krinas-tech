@@ -178,8 +178,9 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onAddProduct, on
       if (editingProduct) await onUpdateProduct(product);
       else await onAddProduct(product);
       handleCloseModal();
-    } catch {
-      // fall through
+    } catch (err) {
+      alert('Failed to save to database. Check console for details.');
+      console.error('Product save failed:', err);
     } finally {
       setIsSaving(false);
     }

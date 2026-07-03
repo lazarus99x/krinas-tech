@@ -215,12 +215,13 @@ const App = () => {
   // CRUD Operations with Optimistic Updates & API calls
   const handleAddProduct = async (p: Product) => {
     if (currentUser) logActivity(currentUser, 'ADD_PRODUCT', `Added ${p.name}`);
-    const productWithUuid = { ...p, id: crypto.randomUUID() };
     // Optimistic Update
-    setProducts(prev => [...prev, productWithUuid]);
+    setProducts(prev => [...prev, p]);
     try {
-      await api.upsertProduct(productWithUuid);
-    } catch {
+      await api.upsertProduct(p);
+    } catch (err) {
+      setProducts(prev => prev.filter(prod => prod.id !== p.id)); // rollback optimistic
+      throw err; // propagate to Inventory form
     }
   };
   

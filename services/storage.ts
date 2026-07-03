@@ -8,36 +8,37 @@ const normalizeSettingsBranding = (settings: AppSettings): AppSettings => {
   return settings;
 };
 
-// Map Product to DB columns (items table)
+// Map Product to DB columns (public.products from schema.ts)
 const productToDb = (p: Product) => ({
   id: p.id,
   name: p.name,
   sku: p.sku || p.id,
-  description: p.description || '',
   category: p.category || '',
-  quantity: p.stock,
   price: p.price || 0,
-  cost: p.vendorPrice || 0,
+  stock: p.stock || 0,
   supplier: p.supplier || '',
-  image_url: p.imageUrl || '',
-  reorder_point: p.lowStockThreshold || 10,
+  description: p.description || '',
+  imageUrl: p.imageUrl || '',
+  vendorPrice: p.vendorPrice || 0,
+  lowStockThreshold: p.lowStockThreshold || 10,
+  enableLowStockAlert: p.enableLowStockAlert ?? true,
   created_at: p.stockDate || new Date().toISOString()
 });
 
-// Map DB columns back to Product
+// Map DB columns back to Product (from public.products)
 const dbToProduct = (item: any): Product => ({
   id: item.id,
   name: item.name,
   sku: item.sku || '',
   category: item.category || '',
   price: item.price || 0,
-  stock: item.quantity || 0,
-  lowStockThreshold: item.reorder_point || 10,
-  enableLowStockAlert: true,
+  stock: item.stock || 0,
+  lowStockThreshold: item.lowStockThreshold || 10,
+  enableLowStockAlert: item.enableLowStockAlert ?? true,
   supplier: item.supplier || '',
   description: item.description || '',
-  imageUrl: item.image_url || '',
-  vendorPrice: item.cost || 0,
+  imageUrl: item.imageUrl || '',
+  vendorPrice: item.vendorPrice || 0,
   stockDate: item.created_at || undefined
 });
 
@@ -47,7 +48,7 @@ export const api = {
   async checkDatabaseSchema(): Promise<boolean> {
     if (!isSupabaseConfigured()) return false;
     try {
-        const { error } = await supabase.from('items').select('id').limit(1);
+        const { error } = await supabase.from('products').select('id').limit(1);
         if (error && error.code === '42P01') {
             return false;
         }
@@ -66,7 +67,7 @@ export const api = {
   async getProducts(): Promise<Product[]> {
     if (isSupabaseConfigured()) {
       try {
-        const { data, error } = await supabase.from('items').select('*');
+        const { data, error } = await supabase.from('products').select('*');
         if (!error && data) {
            return (data as any[]).map(dbToProduct);
         }
@@ -84,16 +85,17 @@ export const api = {
 
     if (isSupabaseConfigured()) {
       try {
-        const { data: existing } = await supabase.from('items').select('id').eq('id', dbProduct.id).maybeSingle();
+        const { data: existing } = await supabase.from('products').select('id').eq('id', dbProduct.id).maybeSingle();
         if (existing) {
-          const { error } = await supabase.from('items').update(payload).eq('id', dbProduct.id);
+          const { error } = await supabase.from('products').update(payload).eq('id', dbProduct.id);
           if (error) throw error;
         } else {
-          const { error } = await supabase.from('items').insert(payload);
+          const { error } = await supabase.from('products').insert(payload);
           if (error) throw error;
         }
       } catch (e) {
          console.warn("DB write failed for product", e);
+         throw e; // propagate so UI shows the error
       }
     }
     return dbProduct;
@@ -102,7 +104,7 @@ export const api = {
   async deleteProduct(id: string): Promise<void> {
     if (isSupabaseConfigured()) {
       try {
-        const { error } = await supabase.from('items').delete().eq('id', id);
+        const { error } = await supabase.from('products').delete().eq('id', id);
         if (error) throw error;
       } catch (e) { 
         console.warn("DB delete failed for product", e);
