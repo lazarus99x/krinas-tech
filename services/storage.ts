@@ -12,7 +12,7 @@ const normalizeSettingsBranding = (settings: AppSettings): AppSettings => {
 const productToDb = (p: Product) => ({
   id: p.id,
   name: p.name,
-  sku: p.sku,
+  sku: p.sku || p.id, // use id as sku if empty to avoid unique constraint crash
   description: p.description || '',
   category: p.category || '',
   quantity: p.stock,
